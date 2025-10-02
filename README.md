@@ -454,26 +454,41 @@ docker network disconnect shared_net site4
 docker network connect shared_net site4
 ```
 
-### 3. 权限错误
+### 3. 权限错误 ⚠️（新站点常见）
 
 **问题**: `permission denied for table xxx`
 
-**检查权限**:
+**快速解决（推荐）**:
 ```bash
+# 使用自动化脚本（最简单）
+cd /docker/db_master
+./scripts/fix-permissions.sh site3_user
+
+# 或手动授权（适用于任何站点）
+docker exec postgres_master psql -U admin -d postgres -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO site3_user;"
+docker exec postgres_master psql -U admin -d postgres -c "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO site3_user;"
+
+# 验证
+docker exec postgres_master psql -U site3_user -d postgres -c "SELECT COUNT(*) FROM site3__users;"
+```
+
+**详细排查**:
+```bash
+# 1. 检查权限
 docker exec postgres_master psql -U admin -d postgres -c "
 SELECT grantee, table_name, privilege_type 
 FROM information_schema.table_privileges 
-WHERE grantee = 'colormagic_user';
+WHERE grantee = 'colormagic_user' AND table_name LIKE 'colormagic_%';
+"
+
+# 2. 如果没有权限，授予所有权限
+docker exec postgres_master psql -U admin -d postgres -c "
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO colormagic_user;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO colormagic_user;
 "
 ```
 
-**重新授权**:
-```bash
-docker exec postgres_master psql -U admin -d postgres -c "
-GRANT ALL PRIVILEGES ON colormagic_users TO colormagic_user;
-GRANT USAGE ON SEQUENCE colormagic_users_id_seq TO colormagic_user;
-"
-```
+**📖 详细指南**: 查看 `权限问题快速解决方案.md`
 
 ### 4. 初始化脚本未执行
 
@@ -677,12 +692,33 @@ apt update && apt upgrade -y
 
 ## 📞 技术支持
 
+### 📚 相关文档
+
+| 文档 | 说明 | 适用场景 |
+|------|------|----------|
+| `应用接入PostgreSQL总系统指南.md` | 完整的应用接入指南 | 新应用接入时必读 |
+| `权限问题快速解决方案.md` | 权限问题快速参考 | ⭐ 遇到权限错误时优先查看 |
+| `ColorMagic数据库结构详解.md` | ColorMagic 表结构详解 | 了解 ColorMagic 数据库设计 |
+| `QUICKSTART.md` | 5分钟快速上手 | 快速部署验证 |
+| `ISSUES_AND_FIXES.md` | 问题排查指南 | 遇到问题时参考 |
+
+### 🔧 常用工具脚本
+
+| 脚本 | 说明 | 用法 |
+|------|------|------|
+| `scripts/fix-permissions.sh` | 自动修复权限问题 | `./scripts/fix-permissions.sh site3_user` |
+| `scripts/local-start.bat` | Windows 本地启动 | 双击运行或 `scripts\local-start.bat` |
+| `scripts/local-verify.bat` | Windows 本地验证 | `scripts\local-verify.bat` |
+| `scripts/local-start.sh` | Linux/Mac 本地启动 | `./scripts/local-start.sh` |
+| `scripts/local-verify.sh` | Linux/Mac 本地验证 | `./scripts/local-verify.sh` |
+
 ### 获取帮助
 
-1. 查看文档：`docs/` 目录
-2. 查看日志：`docker logs postgres_master`
-3. 运行验证：`./scripts/local-verify.sh` 或 `./scripts/vps-verify.sh`
-4. GitHub Issues: [提交问题](https://github.com/your-repo/issues)
+1. 📖 查看相关文档（见上表）
+2. 🔧 使用工具脚本快速诊断
+3. 📋 查看日志：`docker logs postgres_master`
+4. ✅ 运行验证：`./scripts/local-verify.sh` 或 `./scripts/vps-verify.sh`
+5. 🐛 GitHub Issues: [提交问题](https://github.com/sicks0214/postgres-master-system/issues)
 
 ### 版本信息
 
