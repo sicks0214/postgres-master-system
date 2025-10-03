@@ -488,7 +488,7 @@ GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO colormagic_user;
 "
 ```
 
-**📖 详细指南**: 查看 `权限问题快速解决方案.md`
+**📖 详细指南**: 查看 `故障排查与问题解决指南.md` - 权限问题章节
 
 ### 4. 初始化脚本未执行
 
@@ -697,10 +697,11 @@ apt update && apt upgrade -y
 | 文档 | 说明 | 适用场景 |
 |------|------|----------|
 | `应用接入PostgreSQL总系统指南.md` | 完整的应用接入指南 | 新应用接入时必读 |
-| `权限问题快速解决方案.md` | 权限问题快速参考 | ⭐ 遇到权限错误时优先查看 |
+| `故障排查与问题解决指南.md` | 综合故障排查指南 | ⭐ 遇到任何问题时优先查看 |
+| `VPS查看反馈表和注册表指南.md` | VPS端数据查看指南 | 查看反馈和用户数据 |
 | `ColorMagic数据库结构详解.md` | ColorMagic 表结构详解 | 了解 ColorMagic 数据库设计 |
-| `QUICKSTART.md` | 5分钟快速上手 | 快速部署验证 |
-| `ISSUES_AND_FIXES.md` | 问题排查指南 | 遇到问题时参考 |
+| `使用指南-完整版.md` | 完整使用指南 | 系统使用和维护 |
+| `反馈数据查看指南.md` | 反馈数据管理 | unified_feedback 表操作 |
 
 ### 🔧 常用工具脚本
 
